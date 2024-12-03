@@ -3,31 +3,26 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
-public class PlayerMovement : MonoBehaviour
+using Unity.Netcode;
+public class PlayerMovement : NetworkBehaviour
 {
-    public float rayDistance = 10f;
-    public float angleOffset = 5f;
-    private FlightController controller;
     private Rigidbody rig;
     public float rotationSpeed = 40;
     public float movementSpeed = 10f;
-    public float maxRotationSpeed = 100f;
     public float maxMovementSpeed = 10f;
     public float speedMultiplier = 5f;
     public float Speed = 10f;
-    // Start is called before the first frame update
     float leftHorizontal = 0;
-    float leftVertical = 0;
+    public float leftVertical = 0;
     float leftMagnitude = 0;
     float rightHorizontal = 0;
     float rightVertical = 0;
     float rightMagnitude = 0;
+    public bool Test = true;
     void Start()
     {
         rig = GetComponent<Rigidbody>();
-        controller = new FlightController();
-        Physics.gravity = new Vector3(0, -100f, 0); // Double the gravity
+        Physics.gravity = new Vector3(0, -100f, 0);
     }
     public void OnLeftStick(InputValue inputValue)
     {
@@ -46,6 +41,8 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
+        if(!IsOwner && !Test) return;
+        float speed = leftVertical;
         Vector3 rotationVelocity = new Vector3(-rightHorizontal * rotationSpeed * rightMagnitude,
         leftHorizontal * rotationSpeed * leftMagnitude, -rightVertical * rotationSpeed * rightMagnitude);
         rig.angularVelocity = transform.TransformDirection(rotationVelocity);
